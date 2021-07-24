@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "node-telegram-bot-api": "github:yagop/node-telegram-bot-api",
+    "nodemon": "^2.0.12",
+    "prettier": "^2.3.2"
+  }
+}
