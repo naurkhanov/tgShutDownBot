@@ -3,8 +3,8 @@ const axios = require("axios");
 
 const childProcess = require("child_process");
 
-const TG_API_KEY = "1932223428:AAEvnWgzfoeFZXgsEZgoNoXiR2GLFTyPRLQ"; //API твоего бота
-const YA_API_KEY = "AQVN3aowc_-Ocog72SedoPBecVzoE3XJJuO2oZ6l"; // API Yandex Cloud
+const TG_API_KEY = ""; //API твоего бота
+const YA_API_KEY = ""; // API Yandex Cloud
 
 const bot = new TelegramBot(TG_API_KEY, { polling: true });
 
