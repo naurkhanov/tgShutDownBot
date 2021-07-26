@@ -3,16 +3,37 @@ const axios = require("axios");
 
 const childProcess = require("child_process");
 
-const TG_API_KEY = ""; //API твоего бота
-const YA_API_KEY = ""; // API Yandex Cloud
+const TG_API_KEY = "1932223428:AAEvnWgzfoeFZXgsEZgoNoXiR2GLFTyPRLQ"; //API твоего бота
+const YA_API_KEY = "AQVN3aowc_-Ocog72SedoPBecVzoE3XJJuO2oZ6l"; // API Yandex Cloud
 
 const bot = new TelegramBot(TG_API_KEY, { polling: true });
 
 const execProcess = (command) => {
   childProcess.exec(command, function (error, stdout, stderr) {
-    console.log(`stdout: ${stdout}`);
+    console.log(stdout: ${stdout});
   });
 };
+
+const getFlag = {
+  "Выключи компьютер": "-s",
+  "Перезагрузи компьютер": "-r",
+  "Отменить перезагрузку": "-a"
+}
+const getMessage = {
+  "-s": "Комп будет выключен",
+  "-r": "Отменить перезагрузку",
+  "-a": "Перезагрузка отменяется"
+}
+
+function applyShutdown(chatId, mode) {
+  const flag = getFlag[mode];
+  if (flag) {
+    execProcess("shutdown " + flag);
+    bot.sendMessage(chatId, getMessage[flag]);
+    return true;
+  }
+  return false;
+}
 
 bot.on("voice", (msg) => {
   const stream = bot.getFileStream(msg.voice.file_id);
@@ -31,16 +52,7 @@ bot.on("voice", (msg) => {
     };
     axios(axiosConfig)
       .then((response) => {
-        if (response.data.result === "Выключи компьютер") {
-          execProcess("shutdown -s");
-          bot.sendMessage(chatId, "Комп будет выключен");
-        } else if (response.data.result === "Перезагрузи компьютер") {
-          execProcess("shutdown -r");
-          bot.sendMessage(chatId, "Комп будет перезагружен");
-        } else if (response.data.result === "Отменить перезагрузку") {
-          execProcess("shutdown -a");
-          bot.sendMessage(chatId, "Перезагрузка отменяется");
-        } else if (response.data.result === "Привет") {
+        if (!applyShutdown(chatId, response.data.result) && response.data.result === "Привет") {
           bot.sendMessage(chatId, "Здравствуй");
         }
       })
@@ -48,16 +60,4 @@ bot.on("voice", (msg) => {
   });
 });
 
-bot.on("message", (msg) => {
-    const chatId = msg.chat.id;
-    if (msg.text === "Выключи компьютер") {
-        execProcess("shutdown -s");
-        bot.sendMessage(chatId, "Комп будет выключен");
-    } else if (msg.text === "Перезагрузи компьютер") {
-        execProcess("shutdown -r");
-        bot.sendMessage(chatId, "Комп будет перезагружен");
-    } else if (msg.text === "Отменить перезагрузку") {
-        execProcess("shutdown -a");
-        bot.sendMessage(chatId, "Перезагрузка отменяется");
-    }
-});
+bot.on("message", (msg) => applyShutdown(msg.chat.id, msg.text));
